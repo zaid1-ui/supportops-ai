@@ -103,8 +103,8 @@ docker compose up --build
 | Document | Covers |
 |---|---|
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Problem statement, use case, users, business value, system architecture, data flow, agent flow, scalability |
-| `docs/AGENTS.md` | Agent responsibilities, inputs, outputs, tools, prompts, failure modes |
-| `docs/PROMPT_LIBRARY.md` | System, task, validation, routing, escalation prompts |
+| [`docs/AGENTS.md`](docs/AGENTS.md) | Agent responsibilities, inputs, outputs, tools, prompts, failure modes |
+| [`docs/PROMPT_LIBRARY.md`](docs/PROMPT_LIBRARY.md) | System, task, validation, routing, escalation prompts |
 | `docs/CONTEXT_ENGINEERING.md` | Context sources, prioritisation, compression, retrieval |
 | `docs/RAG.md` | Ingestion, chunking, embeddings, vector search, citations |
 | `docs/EVALUATION_FRAMEWORK.md` | Agent, tool, retrieval, workflow, response quality evaluation |
@@ -117,9 +117,9 @@ docker compose up --build
 | Part | Status |
 |---|---|
 | 1. Enterprise Architecture Design | Done |
-| 2. Multi-Agent System Design | Pending |
+| 2. Multi-Agent System Design | Done |
 | 3. Agent Orchestration | Pending |
-| 4. Prompt Engineering | Pending |
+| 4. Prompt Engineering | Done |
 | 5. Context Engineering | Pending |
 | 6. RAG | Pending |
 | 7. MCP Servers & Tools | Pending |
