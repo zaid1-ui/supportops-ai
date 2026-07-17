@@ -11,7 +11,7 @@ from backend.app.core.config import settings
 engine = create_engine(
     settings.database_url,
     connect_args={"check_same_thread": False},
-    echo=settings.debug,
+    echo=False,  # SQL echo is noise; the events table is the real trace.
 )
 
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
