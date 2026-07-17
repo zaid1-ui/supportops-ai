@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Env
+.env
+
+# Data
+data/uploads/*
+!data/uploads/.gitkeep
+data/chroma/
+*.db
+
+# Node
+node_modules/
+.next/
+next-env.d.ts
+
+# Misc
+.DS_Store
+.pytest_cache/

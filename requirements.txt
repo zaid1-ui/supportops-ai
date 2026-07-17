@@ -1,0 +1,40 @@
+# ---- Agent framework ----
+crewai==0.86.0
+crewai-tools==0.17.0
+# crewai pins litellm>=1.44.22 with no upper bound. Left unpinned, pip resolves to
+# a far newer litellm than crewai 0.86.0 was built against and backtracks through
+# hundreds of releases. Pin the contemporaneous version.
+litellm==1.53.9
+
+# ---- LLM framework ----
+langchain==0.3.14
+langchain-community==0.3.14
+langchain-openai==0.2.14
+langchain-text-splitters==0.3.5
+
+# ---- Backend ----
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic==2.10.4
+pydantic-settings==2.7.1
+python-multipart==0.0.20
+
+# ---- Auth ----
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# ---- Database ----
+sqlalchemy==2.0.36
+
+# ---- Vector database ----
+chromadb==0.5.23
+
+# ---- MCP ----
+mcp==1.2.0
+
+# ---- Document ingestion (PDF / DOCX / TXT) ----
+pypdf==5.1.0
+docx2txt==0.8
+
+# ---- Config ----
+python-dotenv==1.0.1
