@@ -4,6 +4,7 @@ Imported by init_db() for metadata registration — every model must be
 re-exported here or its table will not be created.
 """
 
+from backend.app.models.knowledge import Chunk, Document, DocType, IngestStatus
 from backend.app.models.orchestration import (
     Approval,
     ApprovalKind,
@@ -26,4 +27,8 @@ __all__ = [
     "Approval",
     "ApprovalStatus",
     "ApprovalKind",
+    "Document",
+    "DocType",
+    "IngestStatus",
+    "Chunk",
 ]
