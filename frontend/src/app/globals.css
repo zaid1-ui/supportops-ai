@@ -1,3 +1,46 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root { color-scheme: light; }
+
+body {
+  @apply bg-paper text-ink font-sans antialiased;
+}
+
+/* Keyboard focus must stay visible: this console is driven by keyboard during
+   a queue rush, and the approve/reject controls are the ones that matter. */
+:focus-visible {
+  outline: 2px solid theme('colors.signal');
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@layer components {
+  .eyebrow {
+    @apply text-micro font-medium uppercase tracking-wider text-faint;
+  }
+  .card {
+    @apply rounded-card border border-line bg-surface;
+  }
+  .btn {
+    @apply inline-flex items-center gap-1.5 rounded-card px-3 py-1.5 text-sm font-medium
+           transition-colors disabled:opacity-40 disabled:pointer-events-none;
+  }
+  .btn-primary { @apply btn bg-signal text-white hover:bg-[#1a43b8]; }
+  .btn-ghost   { @apply btn border border-line bg-surface text-ink hover:bg-paper; }
+  .btn-danger  { @apply btn border border-line bg-surface text-danger hover:bg-[#FDF2F1]; }
+  .input {
+    @apply w-full rounded-card border border-line bg-surface px-3 py-2 text-sm
+           placeholder:text-faint focus:border-signal focus:outline-none;
+  }
+  .chip {
+    @apply inline-flex items-center rounded px-1.5 py-0.5 font-mono text-micro font-medium;
+  }
+}
