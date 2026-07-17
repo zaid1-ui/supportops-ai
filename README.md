@@ -135,7 +135,7 @@ docker compose up --build
 | 8. Automated Workflows | 1 of 3 (ticket resolution) |
 | 9. Human-in-the-Loop | Done |
 | 10. FastAPI Backend | Done |
-| 11. Frontend Platform | Scaffolded |
+| 11. Frontend Platform | Done (8 modules) |
 | 12. Observability & Evaluation | Partial (events + /metrics) |
 | 13. Evaluation Harness | Pending |
 | 14. Deployment | Docker Compose done |
