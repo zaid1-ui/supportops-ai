@@ -330,7 +330,9 @@ supportops-ai/
 ├── agents/           CrewAI agent definitions + prompt library
 ├── workflows/        Crew assembly, state machine, HITL gates
 ├── rag/              ingestion, chunking, embedding, retrieval, citation
-├── mcp/              5 MCP servers + CrewAI tool adapters
+├── mcp_tools/        5 MCP servers + CrewAI tool adapters
+│                  (named mcp_tools, not mcp: a top-level `mcp/` package
+│                   shadows the MCP SDK's own `mcp` package on sys.path)
 ├── evaluation/       harness, scenarios, benchmark cases
 ├── frontend/         Next.js 14 platform UI
 ├── docs/             ARCHITECTURE.md · AGENTS.md · PROMPT_LIBRARY.md

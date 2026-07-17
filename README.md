@@ -29,7 +29,7 @@ supportops-ai/
 ├── agents/           CrewAI agent definitions + prompts
 ├── workflows/        Crew assembly, state, human-in-the-loop gates
 ├── rag/              Ingestion, chunking, embedding, retrieval
-├── mcp/              MCP servers + tool adapters
+├── mcp_tools/        MCP servers + tool adapters
 ├── evaluation/       Evaluation harness + test scenarios
 ├── docs/             ARCHITECTURE.md, AGENTS.md, PROMPT_LIBRARY.md, ...
 └── README.md
@@ -122,7 +122,7 @@ docker compose up --build
 | 4. Prompt Engineering | Done |
 | 5. Context Engineering | Pending |
 | 6. RAG | Done |
-| 7. MCP Servers & Tools | Pending |
+| 7. MCP Servers & Tools | Done (5 servers) |
 | 8. Automated Workflows | 1 of 3 (ticket resolution) |
 | 9. Human-in-the-Loop | Done |
 | 10. FastAPI Backend | Scaffolded (config, logging, errors, health) |
