@@ -45,6 +45,14 @@ tiktoken==0.7.0
 # ---- Config ----
 python-dotenv==1.0.1
 
+# ---- Runtime prerequisites ----
+# crewai 0.86.0 does `import pkg_resources` at import time (telemetry.py).
+# pkg_resources ships with setuptools, which (a) modern venvs no longer seed by
+# default and (b) dropped pkg_resources entirely in 82.0.0. Both bounds are
+# load-bearing: without the lower, crewai will not import; without the upper,
+# pip installs 82+ and crewai still will not import.
+setuptools>=70.0.0,<82.0.0
+
 # ---- Transitive pins ----
 # chromadb pulls httpx>=0.28 while litellm 1.53.9 requires <0.28. Unpinned,
 # pip resolves to an httpx that litellm refuses to import at runtime.

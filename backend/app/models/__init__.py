@@ -16,8 +16,12 @@ from backend.app.models.orchestration import (
     TicketStatus,
     WorkflowRun,
 )
+from backend.app.models.user import ROLE_APPROVALS, Role, User
 
 __all__ = [
+    "User",
+    "Role",
+    "ROLE_APPROVALS",
     "Ticket",
     "TicketStatus",
     "WorkflowRun",
