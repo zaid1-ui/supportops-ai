@@ -6,6 +6,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from backend.app.api import api_router
 from backend.app.core.config import settings
 from backend.app.core.database import init_db
 from backend.app.core.errors import register_error_handlers
@@ -48,5 +49,4 @@ def health() -> dict:
     return {"status": "ok", "environment": settings.environment}
 
 
-# Routers are registered in later phases:
-#   /auth  /documents  /agents  /workflows  /metrics
+app.include_router(api_router)

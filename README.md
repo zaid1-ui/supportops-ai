@@ -76,7 +76,16 @@ curl http://localhost:8000/health
 # {"status":"ok","environment":"development"}
 ```
 
-### 3. Frontend
+### 3. Seed demo data
+
+```bash
+python -m scripts.seed
+```
+
+Creates four users (one per role) and three sample tickets. Log in as
+`lead@example.com` / `lead123` — the lead role can decide every approval kind.
+
+### 4. Frontend
 
 ```bash
 cd frontend
@@ -90,7 +99,7 @@ npm run dev
 | Backend | http://localhost:8000 |
 | API docs | http://localhost:8000/docs |
 
-### 4. Run with Docker (alternative)
+### 5. Run with Docker (alternative)
 
 ```bash
 docker compose up --build
@@ -125,9 +134,9 @@ docker compose up --build
 | 7. MCP Servers & Tools | Done (5 servers) |
 | 8. Automated Workflows | 1 of 3 (ticket resolution) |
 | 9. Human-in-the-Loop | Done |
-| 10. FastAPI Backend | Scaffolded (config, logging, errors, health) |
+| 10. FastAPI Backend | Done |
 | 11. Frontend Platform | Scaffolded |
-| 12. Observability & Evaluation | Pending |
+| 12. Observability & Evaluation | Partial (events + /metrics) |
 | 13. Evaluation Harness | Pending |
 | 14. Deployment | Docker Compose done |
 | 15. GitHub Requirements | Structure done |
