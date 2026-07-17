@@ -118,13 +118,13 @@ docker compose up --build
 |---|---|
 | 1. Enterprise Architecture Design | Done |
 | 2. Multi-Agent System Design | Done |
-| 3. Agent Orchestration | Pending |
+| 3. Agent Orchestration | Done |
 | 4. Prompt Engineering | Done |
 | 5. Context Engineering | Pending |
 | 6. RAG | Pending |
 | 7. MCP Servers & Tools | Pending |
-| 8. Automated Workflows | Pending |
-| 9. Human-in-the-Loop | Pending |
+| 8. Automated Workflows | 1 of 3 (ticket resolution) |
+| 9. Human-in-the-Loop | Done |
 | 10. FastAPI Backend | Scaffolded (config, logging, errors, health) |
 | 11. Frontend Platform | Scaffolded |
 | 12. Observability & Evaluation | Pending |
