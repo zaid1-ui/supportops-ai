@@ -85,22 +85,29 @@ The tokeniser is loaded lazily (`@lru_cache`). tiktoken downloads its BPE table 
 
 `rag/embeddings.py`
 
-**Selected: `text-embedding-3-small`** (1536 dimensions, OpenAI)
+**Default: `BAAI/bge-small-en-v1.5` via fastembed** (384 dimensions, local, ONNX on CPU)
+**Alternative: `text-embedding-3-small`** (1536 dimensions, OpenAI) — set `EMBEDDING_PROVIDER=openai`
+
+The provider is configuration, not code. This matters because the LLM provider and the embedding
+provider are independent choices: xAI/Grok exposes no public embeddings endpoint, so a Grok
+deployment still needs an embedding source. Local embeddings are the option that needs no second
+account.
 
 ### Justification
 
 | Criterion | Reasoning |
 |---|---|
-| **Setup cost** | Decisive. `bge-small-en-v1.5` requires `sentence-transformers` → `torch` → ~2GB and a platform-specific install. The assessment requires a *reproducible setup*; a graded submission that needs a working CUDA/CPU torch build on the grader's machine is not reproducible. This stays at one `pip install`. |
-| **Consistency** | The LLM layer is already OpenAI via LiteLLM. One provider, one key, one failure mode. |
+| **Setup cost** | `fastembed` runs the model through ONNX runtime, not `torch`. This was the original objection to `bge-small` — `sentence-transformers` pulls ~2GB and a platform-specific torch build, which would break the reproducible setup the assessment requires. ONNX sidesteps that: it is a normal wheel, and the setup stays at one `pip install`. |
+| **No key required** | The default path needs no account, no key, and no egress at query time. A grader can clone, install, and run retrieval end to end. |
+| **Privacy** | Chunks never leave the machine. `RAG.md` previously listed this as the on-premise answer for real customer data — it is now the default rather than a migration path. |
 | **Quality** | Comfortably sufficient for support documentation retrieval — English, moderate jargon, no cross-lingual or code-search demands. The bottleneck here is chunking and metadata scoping, not the marginal MTEB points between small embedding models. |
 | **Cost** | Negligible at this corpus size. Embeddings are computed once at ingest; only the query embedding is per-request. |
 
 ### Trade-offs Accepted
 
-- **Data leaves the premises.** Every chunk is sent to OpenAI at ingest. For a real enterprise support corpus containing customer data, this is a procurement and compliance question, not an engineering one. `bge-small-en-v1.5` is the on-premise answer and the swap is one function in `rag/embeddings.py` plus a re-index — the interface does not change.
-- **Network dependency at ingest.** No embeddings without egress. Chunk persistence is separated from embedding precisely so a network failure marks the document `FAILED` with a message rather than corrupting the index.
-- **Re-indexing cost on model change.** Vectors from different models are not comparable. Changing the model means re-embedding the corpus. Storing chunk text in the `chunks` table rather than only in Chroma is what makes that a re-index rather than a re-ingest.
+- **First run downloads the model.** ~50MB from the fastembed CDN, cached thereafter. Ingest is CPU-bound rather than network-bound, so a large corpus is slower to index than it would be against a hosted API — but query latency is lower, because there is no round trip.
+- **384 dimensions, not 1536.** Smaller vectors, smaller index, faster search, and measurably weaker than the OpenAI model on hard retrieval. For English support documentation this is an acceptable trade; Part 12's retrieval accuracy metric is what would justify switching to `EMBEDDING_PROVIDER=openai`.
+- **Re-indexing cost on model change.** Vectors from different models are not comparable, so switching provider requires `python -m scripts.reindex`. Storing chunk text in the `chunks` table rather than only in Chroma is exactly what makes that a re-index rather than a re-ingest — nothing is re-parsed and citations keep resolving.
 
 **Why 1536 dimensions, not `text-embedding-3-large`'s 3072.** Double the storage and slower search for a marginal gain on a corpus this size and this homogeneous. If Part 12's retrieval accuracy metric shows dense search missing, chunking and metadata scoping are the higher-leverage fixes to try first.
 
@@ -200,7 +207,9 @@ Tested against real ChromaDB and real chunking with a deterministic stub embedde
 |---|---|---|
 | `CHUNK_SIZE` | 800 | Tokens per chunk |
 | `CHUNK_OVERLAP` | 120 | Token overlap |
-| `EMBEDDING_MODEL` | `text-embedding-3-small` | |
+| `EMBEDDING_PROVIDER` | `local` | `local` (fastembed) or `openai` |
+| `EMBEDDING_MODEL` | `BAAI/bge-small-en-v1.5` | |
+| `LLM_BASE_URL` | *(unset)* | Set for any OpenAI-compatible provider, e.g. xAI |
 | `CHROMA_COLLECTION` | `enterprise_knowledge` | |
 | `CHROMA_DIR` | `./data/chroma` | Persistent client path |
 | `RETRIEVAL_TOP_K` | 5 | Default hits per query |

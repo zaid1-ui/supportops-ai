@@ -1,6 +1,6 @@
 """RAG pipeline (Part 6). Documented in docs/RAG.md."""
 
-from rag.embeddings import EMBEDDING_DIM, get_embeddings
+from rag.embeddings import embedding_dim, get_embeddings
 from rag.ingestion.chunking import chunk_documents, count_tokens
 from rag.ingestion.loaders import SUPPORTED_EXTENSIONS, load
 from rag.ingestion.pipeline import delete_document, ingest_file
@@ -9,7 +9,7 @@ from rag.retrieval.vectorstore import get_collection, reset_collection
 
 __all__ = [
     "ingest_file", "delete_document", "load", "SUPPORTED_EXTENSIONS",
-    "chunk_documents", "count_tokens", "get_embeddings", "EMBEDDING_DIM",
+    "chunk_documents", "count_tokens", "get_embeddings", "embedding_dim",
     "Retriever", "RetrievedChunk", "render_context",
     "get_collection", "reset_collection",
 ]

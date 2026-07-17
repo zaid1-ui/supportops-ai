@@ -40,9 +40,19 @@ class Settings(BaseSettings):
     chroma_collection: str = "enterprise_knowledge"
 
     # ---- LLM ----
-    openai_api_key: str = ""
+    # Any OpenAI-compatible provider. For xAI/Grok set:
+    #   LLM_API_KEY=xai-...   LLM_BASE_URL=https://api.x.ai/v1   LLM_MODEL=grok-3-mini
+    llm_api_key: str = ""
+    llm_base_url: str | None = None
     llm_model: str = "gpt-4o-mini"
-    embedding_model: str = "text-embedding-3-small"
+
+    # ---- Embeddings ----
+    # "local"  -> fastembed, ONNX on CPU, no key, no network at query time
+    # "openai" -> OpenAI embeddings API
+    # xAI has no public embeddings endpoint, so a Grok LLM still needs one of
+    # these for retrieval. They are independent choices on purpose.
+    embedding_provider: str = "local"
+    embedding_model: str = "BAAI/bge-small-en-v1.5"
 
     # ---- RAG ----
     chunk_size: int = 800
@@ -52,6 +62,14 @@ class Settings(BaseSettings):
     # ---- Storage ----
     upload_dir: str = "./data/uploads"
     chroma_dir: str = "./data/chroma"
+
+    # Back-compat: earlier phases used OPENAI_API_KEY.
+    openai_api_key: str = ""
+
+    @computed_field
+    @property
+    def resolved_llm_key(self) -> str:
+        return self.llm_api_key or self.openai_api_key
 
     @computed_field
     @property

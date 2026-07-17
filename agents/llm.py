@@ -30,9 +30,14 @@ _TIER_CONFIG: dict[Tier, dict] = {
 
 
 def get_llm(tier: Tier = Tier.REASONING) -> ChatOpenAI:
-    """Build a ChatOpenAI client for the given tier."""
+    """Build an LLM client for the given tier.
+
+    Any OpenAI-compatible provider works via base_url — xAI/Grok, Together,
+    a local vLLM. The agents do not know or care which; only this factory does.
+    """
     return ChatOpenAI(
         model=settings.llm_model,
-        api_key=settings.openai_api_key,
+        api_key=settings.resolved_llm_key,
+        base_url=settings.llm_base_url,
         **_TIER_CONFIG[tier],
     )

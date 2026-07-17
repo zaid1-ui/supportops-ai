@@ -33,6 +33,10 @@ sqlalchemy==2.0.36
 # ---- Vector database ----
 chromadb==0.5.23
 
+# ---- Embeddings (EMBEDDING_PROVIDER=local) ----
+# ONNX on CPU. Deliberately not sentence-transformers, which pulls ~2GB of torch.
+fastembed==0.5.1
+
 # ---- MCP ----
 mcp==1.2.0
 
