@@ -106,8 +106,8 @@ Scope of automation:
 │ RAG PIPELINE        │  │ PERSISTENCE      │  │ OBSERVABILITY        │
 │ ingest → chunk →    │  │ SQLAlchemy ORM   │  │ event store · traces │
 │ embed → ChromaDB    │  │ (SQLite engine)  │  │ metrics · eval runs  │
-│ → hybrid retrieve   │  │ (tickets, users, │  │                      │
-│ → rerank → cite     │  │  runs, approvals)│  │                      │
+│ → dense retrieve    │  │ (tickets, users, │  │                      │
+│ → cite              │  │  runs, approvals)│  │                      │
 └─────────────────────┘  └──────────────────┘  └──────────────────────┘
 ```
 
@@ -128,6 +128,7 @@ Scope of automation:
 ### 5.3 Why These Choices
 
 - **CrewAI over LangGraph** — the workflows here are *role-shaped* (a triage person, a researcher, a QA reviewer), not arbitrary state machines. CrewAI's role/goal/backstory abstraction maps directly onto how a real support org is structured, and its hierarchical process gives task delegation for free. Trade-off accepted: less fine-grained control over state transitions than LangGraph, mitigated by an explicit `WorkflowState` object passed through task context.
+- **Dense retrieval only** — Part 6 requires vector search and citations. Hybrid retrieval (BM25 + reciprocal rank fusion) and cross-encoder reranking are the known next lever on retrieval accuracy, but they are a scaling path, not implemented here: each adds a dependency and a failure mode, and neither earns its keep until the retrieval metrics in Part 12 show dense search missing.
 - **ChromaDB over FAISS** — needs metadata filtering (`product_area`, `doc_type`, `version`, `updated_at`) at query time for scoped retrieval, and persistence without hand-rolling an index sidecar. FAISS is faster at raw ANN but has no native metadata filter or persistence story.
 - **SQLAlchemy (SQLite backend)** — the ORM is the contract; the engine URL is a single config value, so the same models run on SQLite locally and on any server engine later without code changes. JSON columns hold agent traces and workflow state snapshots. Keeps the reproducible setup the assessment requires to one `pip install` with no database server to provision.
 - **Next.js over Streamlit** — the deliverable must "resemble an enterprise platform rather than a chatbot." Streamlit cannot express an approval inbox, a live agent trace, and a metrics dashboard as coherent product surfaces.
@@ -153,7 +154,7 @@ Upload (PDF/DOCX/TXT)
    ├─► Enrich        metadata: doc_id, source, page, heading, product_area,
    │                 doc_type, version, updated_at
    │
-   ├─► Embed         BAAI/bge-small-en-v1.5  (batch)
+   ├─► Embed         text-embedding-3-small  (batch)   [justified in RAG.md]
    │
    └─► Upsert        ChromaDB collection `enterprise_knowledge`
                      + chunks row (SQLAlchemy) for citation resolution
@@ -171,10 +172,8 @@ Question
    │     enterprise (retrieval, below)
    │
    ├─► Retrieval:
-   │     query rewrite ─► embed ─► Chroma top-k=20 (metadata-filtered)
-   │                              ─► BM25 top-k=20 over same corpus
-   │                              ─► Reciprocal Rank Fusion
-   │                              ─► cross-encoder rerank ─► top-5
+   │     embed query ─► Chroma dense search, metadata-filtered
+   │                    by product_area / doc_type ─► top-5
    │
    ├─► Context assembly under token budget (priority order, then compress)
    │
@@ -302,7 +301,7 @@ Ranked by what actually saturates:
 **Retrieval layer**
 - Chroma persistent server mode with HNSW tuned (`M=32`, `ef_construction=200`); metadata pre-filtering shrinks the candidate set before ANN.
 - Collection **sharded by `product_area`** — retrieval is almost always scoped, so this cuts search space and blast radius.
-- Embeddings computed once at ingest; reranker is the only per-query model and it runs on top-40, not the corpus.
+- Embeddings computed once at ingest. Query embedding is the only per-query model call, so retrieval cost is flat in corpus size.
 - Ingestion is a separate worker pool — a 500-page PDF upload must not affect query latency.
 
 **Data layer**
@@ -318,7 +317,7 @@ Ranked by what actually saturates:
 
 - **Idempotency keys** on every side-effecting MCP tool — a retried `email.send` must not double-send.
 - **Circuit breakers** per external dependency; open circuit → degrade to human queue rather than fail the run.
-- **Graceful degradation ladder:** reranker down → fusion-only ranking. Chroma down → BM25-only + flag lower confidence. LLM primary down → fallback model. All down → tickets queue for humans, and the platform says so plainly.
+- **Graceful degradation ladder:** Chroma down → the Research Agent reports a knowledge gap rather than guessing, and the run escalates. LLM primary down → fallback model. All down → tickets queue for humans, and the platform says so plainly.
 - **Every run is replayable** from its event stream, which is also what feeds the evaluation harness in Part 13.
 
 ---

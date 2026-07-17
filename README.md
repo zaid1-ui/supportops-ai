@@ -106,7 +106,7 @@ docker compose up --build
 | [`docs/AGENTS.md`](docs/AGENTS.md) | Agent responsibilities, inputs, outputs, tools, prompts, failure modes |
 | [`docs/PROMPT_LIBRARY.md`](docs/PROMPT_LIBRARY.md) | System, task, validation, routing, escalation prompts |
 | `docs/CONTEXT_ENGINEERING.md` | Context sources, prioritisation, compression, retrieval |
-| `docs/RAG.md` | Ingestion, chunking, embeddings, vector search, citations |
+| [`docs/RAG.md`](docs/RAG.md) | Ingestion, chunking, embeddings, vector search, citations |
 | `docs/EVALUATION_FRAMEWORK.md` | Agent, tool, retrieval, workflow, response quality evaluation |
 | `docs/DEPLOYMENT.md` | Deployment architecture |
 
@@ -121,7 +121,7 @@ docker compose up --build
 | 3. Agent Orchestration | Done |
 | 4. Prompt Engineering | Done |
 | 5. Context Engineering | Pending |
-| 6. RAG | Pending |
+| 6. RAG | Done |
 | 7. MCP Servers & Tools | Pending |
 | 8. Automated Workflows | 1 of 3 (ticket resolution) |
 | 9. Human-in-the-Loop | Done |
