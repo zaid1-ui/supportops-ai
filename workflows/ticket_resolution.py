@@ -69,6 +69,7 @@ from agents.schemas import (
 )
 from backend.app.core.logging import get_logger
 from backend.app.models import ApprovalKind, EventType, RunStatus, Ticket
+from mcp_tools.registry import build_tools
 from workflows.hitl import (
     ApprovalGate,
     ApprovalRequired,
@@ -94,9 +95,10 @@ class TicketResolutionWorkflow:
         self.db = db
         self.store = StateStore(db)
         self.gate = ApprovalGate(db, self.store)
-        # Tools are injected per agent name. Empty until the MCP layer (Part 7)
-        # is wired in; the orchestration contract does not depend on them.
-        self.tools = tools or {}
+        # Defaults to the MCP registry (Part 7). Injectable so the evaluation
+        # harness can substitute recorded tools and measure agent reasoning
+        # without live retrieval underneath it.
+        self.tools = tools if tools is not None else build_tools(db)
 
     def _t(self, name: str) -> list[BaseTool]:
         return self.tools.get(name, [])
