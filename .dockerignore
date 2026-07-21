@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Local secrets and data — never bake into an image
+.env
+data/
+
+# Node (backend image doesn't need it; frontend has its own context)
+frontend/
+
+# Git & tooling
+.git/
+.gitignore
+*.md
+!README.md
+
+# Test artifacts
+.pytest_cache/
+.DS_Store

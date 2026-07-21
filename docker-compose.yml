@@ -1,3 +1,12 @@
+# SupportOps AI — local reproducible deployment.
+#
+#   docker compose up --build
+#
+# Backend on :8000, frontend on :3000. SQLite and ChromaDB persist in the
+# ./data volume, so state survives a container restart. No external database
+# or cache service — that is the whole point of the SQLite + local-embeddings
+# choices (see docs/ARCHITECTURE.md).
+
 services:
   backend:
     build:
@@ -7,15 +16,27 @@ services:
       - "8000:8000"
     env_file: .env
     volumes:
+      # Persist the DB, vector store, and uploads across restarts.
       - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        # Baked in at build time — Next.js inlines NEXT_PUBLIC_* at build, so it
+        # must be present when `npm run build` runs, not only at runtime.
+        NEXT_PUBLIC_API_URL: http://localhost:8000
     ports:
       - "3000:3000"
-    environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8000
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+    restart: unless-stopped
