@@ -15,6 +15,11 @@ export default function WorkflowsPage() {
   const workflows = useQuery({ queryKey: ['workflows'], queryFn: api.workflows });
   const [workflow, setWorkflow] = useState('ticket_resolution');
 
+  // Batch workflows scan the whole queue, so asking for a ticket would be a lie
+  // about what the run does.
+  const BATCH = ['knowledge_gap_review', 'escalation_risk_assessment'];
+  const isBatch = BATCH.includes(workflow);
+
   const status = useQuery({
     queryKey: ['run', runId],
     queryFn: () => api.workflowStatus(runId!),
@@ -46,15 +51,20 @@ export default function WorkflowsPage() {
             {workflows.data?.map((w) => <option key={w} value={w}>{w.replace(/_/g, ' ')}</option>)}
           </select>
         </div>
-        <div className="min-w-[160px]">
-          <label htmlFor="tk" className="eyebrow mb-1 block">Ticket</label>
-          <input id="tk" value={ticketId} onChange={(e) => setTicketId(e.target.value)} className="input font-mono" />
-        </div>
+        {!isBatch && (
+          <div className="min-w-[160px]">
+            <label htmlFor="tk" className="eyebrow mb-1 block">Ticket</label>
+            <input id="tk" value={ticketId} onChange={(e) => setTicketId(e.target.value)}
+                   className="input font-mono" />
+          </div>
+        )}
         <button onClick={() => start.mutate()} disabled={start.isPending} className="btn-primary">
           {start.isPending ? 'Starting…' : 'Start run'}
         </button>
         <p className="text-xs text-muted">
-          Seeded tickets: TK-1001, TK-1002, TK-1003. A run takes minutes and stops at an approval gate.
+          {isBatch
+            ? 'Scans the whole open queue — no ticket needed. Takes minutes and ends at a review gate.'
+            : 'Seeded tickets: TK-1001, TK-1002, TK-1003. Takes minutes and stops at an approval gate.'}
         </p>
       </div>
 

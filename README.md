@@ -114,7 +114,7 @@ docker compose up --build
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Problem statement, use case, users, business value, system architecture, data flow, agent flow, scalability |
 | [`docs/AGENTS.md`](docs/AGENTS.md) | Agent responsibilities, inputs, outputs, tools, prompts, failure modes |
 | [`docs/PROMPT_LIBRARY.md`](docs/PROMPT_LIBRARY.md) | System, task, validation, routing, escalation prompts |
-| `docs/CONTEXT_ENGINEERING.md` | Context sources, prioritisation, compression, retrieval |
+| [`docs/CONTEXT_ENGINEERING.md`](docs/CONTEXT_ENGINEERING.md) | Context sources, prioritisation, compression, retrieval |
 | [`docs/RAG.md`](docs/RAG.md) | Ingestion, chunking, embeddings, vector search, citations |
 | `docs/EVALUATION_FRAMEWORK.md` | Agent, tool, retrieval, workflow, response quality evaluation |
 | `docs/DEPLOYMENT.md` | Deployment architecture |
@@ -129,10 +129,10 @@ docker compose up --build
 | 2. Multi-Agent System Design | Done |
 | 3. Agent Orchestration | Done |
 | 4. Prompt Engineering | Done |
-| 5. Context Engineering | Pending |
+| 5. Context Engineering | Done |
 | 6. RAG | Done |
 | 7. MCP Servers & Tools | Done (5 servers) |
-| 8. Automated Workflows | 1 of 3 (ticket resolution) |
+| 8. Automated Workflows | Done (3 workflows) |
 | 9. Human-in-the-Loop | Done |
 | 10. FastAPI Backend | Done |
 | 11. Frontend Platform | Done (8 modules) |

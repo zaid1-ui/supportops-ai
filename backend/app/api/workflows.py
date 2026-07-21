@@ -12,7 +12,7 @@ from backend.app.schemas.api import (
     WorkflowRunResponse,
     WorkflowStatusResponse,
 )
-from workflows import WORKFLOW_REGISTRY
+from workflows import BATCH_WORKFLOWS, WORKFLOW_REGISTRY
 
 router = APIRouter(tags=["workflows"])
 logger = get_logger(__name__)
@@ -41,8 +41,17 @@ def run_workflow(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Unknown workflow '{workflow}'. Available: {', '.join(WORKFLOW_REGISTRY)}",
         )
-    if not ticket_id or db.get(Ticket, ticket_id) is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"No such ticket: {ticket_id}")
+
+    # Batch workflows scan a queue; a ticket_id would be meaningless for them.
+    if workflow not in BATCH_WORKFLOWS:
+        if not ticket_id:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=f"Workflow '{workflow}' requires a ticket_id",
+            )
+        if db.get(Ticket, ticket_id) is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                                detail=f"No such ticket: {ticket_id}")
 
     wf = WORKFLOW_REGISTRY[workflow](db)
     run_id = wf.start(ticket_id)
