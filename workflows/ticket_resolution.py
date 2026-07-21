@@ -69,6 +69,7 @@ from agents.schemas import (
 )
 from backend.app.core.logging import get_logger
 from backend.app.models import ApprovalKind, EventType, RunStatus, Ticket
+from mcp_tools.registry import build_tools
 from workflows.hitl import (
     ApprovalGate,
     ApprovalRequired,
@@ -94,9 +95,10 @@ class TicketResolutionWorkflow:
         self.db = db
         self.store = StateStore(db)
         self.gate = ApprovalGate(db, self.store)
-        # Tools are injected per agent name. Empty until the MCP layer (Part 7)
-        # is wired in; the orchestration contract does not depend on them.
-        self.tools = tools or {}
+        # Defaults to the MCP registry (Part 7). Injectable so the evaluation
+        # harness can substitute recorded tools and measure agent reasoning
+        # without live retrieval underneath it.
+        self.tools = tools if tools is not None else build_tools(db)
 
     def _t(self, name: str) -> list[BaseTool]:
         return self.tools.get(name, [])
@@ -180,6 +182,25 @@ class TicketResolutionWorkflow:
 
         with TaskTimer(self.store, run_id, "triage", "classify"):
             result = Crew(agents=[agent], tasks=[task], process=Process.sequential).kickoff()
+
+        # result.pydantic is None when the model's output could not be parsed
+        # into the schema — a garbled response, or a call that failed after its
+        # retries. Reading .intent off None would crash the whole run mid-flight.
+        # A ticket we cannot even classify is exactly what should go to a human,
+        # so escalate cleanly instead of raising.
+        if result.pydantic is None:
+            self.store.emit(
+                run_id,
+                EventType.TASK_FAILED,
+                agent="triage",
+                task="classify",
+                payload={"reason": "triage produced no parseable classification"},
+            )
+            raise RecoveryExhausted(
+                "Triage returned no parseable classification "
+                "(model output did not match the schema, or the call failed). "
+                "Routing to a human."
+            )
 
         state.triage = result.pydantic
         self.store.snapshot(run_id, state, current_task="triage")
