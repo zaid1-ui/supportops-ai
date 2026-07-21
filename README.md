@@ -116,7 +116,7 @@ docker compose up --build
 | [`docs/PROMPT_LIBRARY.md`](docs/PROMPT_LIBRARY.md) | System, task, validation, routing, escalation prompts |
 | [`docs/CONTEXT_ENGINEERING.md`](docs/CONTEXT_ENGINEERING.md) | Context sources, prioritisation, compression, retrieval |
 | [`docs/RAG.md`](docs/RAG.md) | Ingestion, chunking, embeddings, vector search, citations |
-| `docs/EVALUATION_FRAMEWORK.md` | Agent, tool, retrieval, workflow, response quality evaluation |
+| [`docs/OBSERVABILITY.md`](docs/OBSERVABILITY.md) | Observability (Part 12) and evaluation framework (Part 13) |
 | `docs/DEPLOYMENT.md` | Deployment architecture |
 
 ---
@@ -136,7 +136,7 @@ docker compose up --build
 | 9. Human-in-the-Loop | Done |
 | 10. FastAPI Backend | Done |
 | 11. Frontend Platform | Done (8 modules) |
-| 12. Observability & Evaluation | Partial (events + /metrics) |
-| 13. Evaluation Harness | Pending |
+| 12. Observability & Evaluation | Done |
+| 13. Evaluation Harness | Done |
 | 14. Deployment | Docker Compose done |
 | 15. GitHub Requirements | Structure done |
