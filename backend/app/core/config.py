@@ -44,7 +44,11 @@ class Settings(BaseSettings):
     #   LLM_API_KEY=xai-...   LLM_BASE_URL=https://api.x.ai/v1   LLM_MODEL=grok-3-mini
     llm_api_key: str = ""
     llm_base_url: str | None = None
-    llm_model: str = "gpt-4o-mini"
+    llm_model: str = "openai/gpt-4o-mini"  # litellm needs a provider/ prefix
+    # litellm retries a rate-limited call this many times, honouring the
+    # provider's retry-after. Free tiers meter per minute and a full crew
+    # exceeds that, so without retries the first 429 kills the run.
+    llm_max_retries: int = 5
 
     # ---- Embeddings ----
     # "local"  -> fastembed, ONNX on CPU, no key, no network at query time
