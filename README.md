@@ -117,7 +117,7 @@ docker compose up --build
 | [`docs/CONTEXT_ENGINEERING.md`](docs/CONTEXT_ENGINEERING.md) | Context sources, prioritisation, compression, retrieval |
 | [`docs/RAG.md`](docs/RAG.md) | Ingestion, chunking, embeddings, vector search, citations |
 | [`docs/OBSERVABILITY.md`](docs/OBSERVABILITY.md) | Observability (Part 12) and evaluation framework (Part 13) |
-| `docs/DEPLOYMENT.md` | Deployment architecture |
+| [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) | Deployment architecture and how to run in containers |
 
 ---
 
@@ -138,5 +138,5 @@ docker compose up --build
 | 11. Frontend Platform | Done (8 modules) |
 | 12. Observability & Evaluation | Done |
 | 13. Evaluation Harness | Done |
-| 14. Deployment | Docker Compose done |
-| 15. GitHub Requirements | Structure done |
+| 14. Deployment | Done |
+| 15. GitHub Requirements | Done |
