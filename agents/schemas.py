@@ -5,9 +5,9 @@ hand each other schema-validated objects rather than free text, which is what
 makes the failure modes in docs/AGENTS.md detectable instead of silent.
 """
 
-from __future__ import annotations
-
 from enum import Enum
+
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -70,7 +70,7 @@ class Citation(BaseModel):
     doc_id: str = Field(description="Source document identifier.")
     chunk_id: str = Field(description="Identifier of the retrieved chunk.")
     source: str = Field(description="Human-readable document name.")
-    page: int | None = Field(default=None, description="Page number where applicable.")
+    page: Optional[int] = Field(default=None, description="Page number where applicable.")
     score: float = Field(description="Retrieval relevance score.")
 
 
@@ -106,7 +106,7 @@ class ResearchOutput(BaseModel):
     knowledge_gap: bool = Field(
         description="True when the knowledge base contains no answer. Never guess instead."
     )
-    gap_description: str | None = Field(
+    gap_description: Optional[str] = Field(
         default=None, description="What the knowledge base is missing, when knowledge_gap is True."
     )
 
@@ -140,7 +140,7 @@ class ValidationIssue(BaseModel):
 
     category: str = Field(description="groundedness | policy | completeness | tone | safety")
     detail: str = Field(description="What is wrong.")
-    offending_text: str | None = Field(default=None, description="The span at fault.")
+    offending_text: Optional[str] = Field(default=None, description="The span at fault.")
 
 
 class ValidationOutput(BaseModel):
@@ -151,7 +151,7 @@ class ValidationOutput(BaseModel):
     policy_compliant: bool
     complete: bool = Field(description="Addresses every question the customer asked.")
     issues: list[ValidationIssue] = Field(default_factory=list)
-    critique: str | None = Field(
+    critique: Optional[str] = Field(
         default=None, description="Actionable revision instruction fed back to the Resolution Agent."
     )
 
@@ -163,7 +163,7 @@ class EscalationOutput(BaseModel):
     risk_score: float = Field(ge=0.0, le=1.0)
     drivers: list[str] = Field(description="Factors raising the risk, most significant first.")
     escalate: bool
-    target_queue: Queue | None = Field(default=None)
+    target_queue: Optional[Queue] = Field(default=None)
     rationale: str
 
 
@@ -194,13 +194,13 @@ class WorkflowState(BaseModel):
     """
 
     run_id: str
-    ticket_id: str | None = None
-    triage: TriageOutput | None = None
-    research: ResearchOutput | None = None
-    diagnostic: DiagnosticOutput | None = None
-    resolution: ResolutionOutput | None = None
-    validation: ValidationOutput | None = None
-    escalation: EscalationOutput | None = None
-    report: ReportingOutput | None = None
+    ticket_id: Optional[str] = None
+    triage: Optional[TriageOutput] = None
+    research: Optional[ResearchOutput] = None
+    diagnostic: Optional[DiagnosticOutput] = None
+    resolution: Optional[ResolutionOutput] = None
+    validation: Optional[ValidationOutput] = None
+    escalation: Optional[EscalationOutput] = None
+    report: Optional[ReportingOutput] = None
     validation_attempts: int = 0
     awaiting_approval: bool = False
