@@ -24,5 +24,8 @@ async def main():
         result = await client.call_tool("draft_email", {"to": "test@example.com", "subject": "Test", "body": "Hello"})
         print("draft_email:", result.data)
 
+        result = await client.call_tool("queue_pressure", {})
+        print("queue_pressure:", result.data)
+
 if __name__ == "__main__":
     asyncio.run(main())
