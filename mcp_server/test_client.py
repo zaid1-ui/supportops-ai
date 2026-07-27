@@ -1,6 +1,8 @@
 """Quick manual check that the MCP server responds to tool calls."""
 
 import asyncio
+from http import client
+from importlib import resources
 from fastmcp import Client
 from fastmcp.client.transports import StdioTransport
 
@@ -32,6 +34,12 @@ async def main():
             "executive_summary": "This is a test.",
         })
         print("render_report:", result.data)
+
+        resources = await client.list_resources()
+        print("Resources:", [r.uri for r in resources])
+    
+        result = await client.read_resource("schema://ticket")
+        print("ticket_schema:", result[0].text[:200])
 
 if __name__ == "__main__":
     asyncio.run(main())
