@@ -18,5 +18,8 @@ async def main():
         result = await client.call_tool("get_ticket", {"ticket_id": "does-not-exist"})
         print("Result:", result)
 
+        result = await client.call_tool("search_knowledge", {"query": "refund policy"})
+        print("search_knowledge:", result.data)
+
 if __name__ == "__main__":
     asyncio.run(main())
