@@ -67,4 +67,10 @@ def get_llm(tier: Tier = Tier.REASONING) -> LLM:
         base_url=settings.llm_base_url or None,
         temperature=_TEMPS[tier],
         max_retries=settings.llm_max_retries,
+        # Force the LiteLLM path rather than CrewAI's native Gemini SDK
+        # integration. The native path's tool-schema converter rejects
+        # `additionalProperties` in a tool's JSON schema, which every
+        # MCP-derived tool schema includes — a CrewAI/google-genai
+        # incompatibility, not a bug in our tools.
+        is_litellm=True,
     )
