@@ -21,5 +21,8 @@ async def main():
         result = await client.call_tool("search_knowledge", {"query": "refund policy"})
         print("search_knowledge:", result.data)
 
+        result = await client.call_tool("draft_email", {"to": "test@example.com", "subject": "Test", "body": "Hello"})
+        print("draft_email:", result.data)
+
 if __name__ == "__main__":
     asyncio.run(main())
