@@ -27,5 +27,11 @@ async def main():
         result = await client.call_tool("queue_pressure", {})
         print("queue_pressure:", result.data)
 
+        result = await client.call_tool("render_report", {
+            "title": "Test Report",
+            "executive_summary": "This is a test.",
+        })
+        print("render_report:", result.data)
+
 if __name__ == "__main__":
     asyncio.run(main())
