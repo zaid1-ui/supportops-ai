@@ -90,7 +90,7 @@ class Harness:
 
     def eval_tools(self) -> SuiteResult:
         """Call each MCP tool with known input, assert result shape and safety."""
-        from mcp_tools.servers import knowledge, tickets
+        from mcp_server.tools import knowledge, tickets
 
         suite = SuiteResult("tool")
 

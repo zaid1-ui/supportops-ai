@@ -32,7 +32,7 @@ from agents.prompts import REPORTING_TASK, RESEARCH_TASK
 from agents.schemas import ReportingOutput, ResearchOutput, WorkflowState
 from backend.app.core.logging import get_logger
 from backend.app.models import ApprovalKind, EventType, RunStatus, Ticket, TicketStatus
-from mcp_tools.registry import build_tools
+from mcp_server.registry import build_tools
 from workflows.hitl import ApprovalGate, ApprovalRequired
 from workflows.state import StateStore, TaskTimer
 
@@ -49,7 +49,16 @@ class KnowledgeGapWorkflow:
         self.db = db
         self.store = StateStore(db)
         self.gate = ApprovalGate(db, self.store)
-        self.tools = tools if tools is not None else build_tools(db)
+        self._adapter = None
+        if tools is not None:
+            self.tools = tools
+        else:
+            self.tools, self._adapter = build_tools()
+
+    def close(self) -> None:
+        if self._adapter is not None:
+            self._adapter.stop()
+            self._adapter = None
 
     def _t(self, name: str) -> list[BaseTool]:
         return self.tools.get(name, [])
