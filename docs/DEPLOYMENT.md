@@ -50,7 +50,7 @@ This document covers the deployment architecture and how to run the platform in 
 - **Healthcheck** hits `/health`; the frontend waits on it (`depends_on: condition: service_healthy`) so it never starts against a backend that isn't ready.
 - **Seed on boot** runs `scripts.seed` with `|| true`, so a redeploy against an already-seeded volume doesn't abort.
 
-The `PYTHONPATH=/app` env var is what lets the `backend.app.*`, `agents.*`, `mcp_tools.*` imports resolve — the same reason the app must be run from the repo root locally.
+The `PYTHONPATH=/app` env var is what lets the `backend.app.*`, `agents.*`, `mcp_server.*` imports resolve — the same reason the app must be run from the repo root locally.
 
 ### frontend
 
@@ -77,10 +77,10 @@ cp .env.example .env
 docker compose up --build
 ```
 
-| Service | URL |
-|---|---|
-| Frontend | http://localhost:3000 |
-| Backend | http://localhost:8000 |
+| Service  | URL                        |
+| -------- | -------------------------- |
+| Frontend | http://localhost:3000      |
+| Backend  | http://localhost:8000      |
 | API docs | http://localhost:8000/docs |
 
 Sign in with a seeded account — `lead@example.com` / `lead123`.

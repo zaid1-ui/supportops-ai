@@ -8,15 +8,15 @@ Assessment 3: Enterprise AI Operations Platform (Multi-Agent Systems & Agent Eng
 
 ## Stack
 
-| Layer | Technology |
-|---|---|
-| Agent framework | CrewAI |
-| LLM framework | LangChain |
-| Backend | FastAPI |
-| Frontend | Next.js 14 |
+| Layer           | Technology                         |
+| --------------- | ---------------------------------- |
+| Agent framework | CrewAI                             |
+| LLM framework   | LangChain                          |
+| Backend         | FastAPI                            |
+| Frontend        | Next.js 14                         |
 | Vector database | ChromaDB (persistent local client) |
-| Database | SQLAlchemy (SQLite engine) |
-| Tools | MCP servers |
+| Database        | SQLAlchemy (SQLite engine)         |
+| Tools           | MCP servers                        |
 
 ---
 
@@ -29,7 +29,7 @@ supportops-ai/
 ├── agents/           CrewAI agent definitions + prompts
 ├── workflows/        Crew assembly, state, human-in-the-loop gates
 ├── rag/              Ingestion, chunking, embedding, retrieval
-├── mcp_tools/        MCP servers + tool adapters
+├── mcp_server/       Standalone FastMCP server (tools, resources, prompts)
 ├── evaluation/       Evaluation harness + test scenarios
 ├── docs/             ARCHITECTURE.md, AGENTS.md, PROMPT_LIBRARY.md, ...
 └── README.md
@@ -93,10 +93,10 @@ npm install
 npm run dev
 ```
 
-| Service | URL |
-|---|---|
-| Frontend | http://localhost:3000 |
-| Backend | http://localhost:8000 |
+| Service  | URL                        |
+| -------- | -------------------------- |
+| Frontend | http://localhost:3000      |
+| Backend  | http://localhost:8000      |
 | API docs | http://localhost:8000/docs |
 
 ### 5. Run with Docker (alternative)
@@ -109,34 +109,34 @@ docker compose up --build
 
 ## Documentation
 
-| Document | Covers |
-|---|---|
-| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Problem statement, use case, users, business value, system architecture, data flow, agent flow, scalability |
-| [`docs/AGENTS.md`](docs/AGENTS.md) | Agent responsibilities, inputs, outputs, tools, prompts, failure modes |
-| [`docs/PROMPT_LIBRARY.md`](docs/PROMPT_LIBRARY.md) | System, task, validation, routing, escalation prompts |
-| [`docs/CONTEXT_ENGINEERING.md`](docs/CONTEXT_ENGINEERING.md) | Context sources, prioritisation, compression, retrieval |
-| [`docs/RAG.md`](docs/RAG.md) | Ingestion, chunking, embeddings, vector search, citations |
-| [`docs/OBSERVABILITY.md`](docs/OBSERVABILITY.md) | Observability (Part 12) and evaluation framework (Part 13) |
-| [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) | Deployment architecture and how to run in containers |
+| Document                                                     | Covers                                                                                                      |
+| ------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md)               | Problem statement, use case, users, business value, system architecture, data flow, agent flow, scalability |
+| [`docs/AGENTS.md`](docs/AGENTS.md)                           | Agent responsibilities, inputs, outputs, tools, prompts, failure modes                                      |
+| [`docs/PROMPT_LIBRARY.md`](docs/PROMPT_LIBRARY.md)           | System, task, validation, routing, escalation prompts                                                       |
+| [`docs/CONTEXT_ENGINEERING.md`](docs/CONTEXT_ENGINEERING.md) | Context sources, prioritisation, compression, retrieval                                                     |
+| [`docs/RAG.md`](docs/RAG.md)                                 | Ingestion, chunking, embeddings, vector search, citations                                                   |
+| [`docs/OBSERVABILITY.md`](docs/OBSERVABILITY.md)             | Observability (Part 12) and evaluation framework (Part 13)                                                  |
+| [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)                   | Deployment architecture and how to run in containers                                                        |
 
 ---
 
 ## Build Status
 
-| Part | Status |
-|---|---|
-| 1. Enterprise Architecture Design | Done |
-| 2. Multi-Agent System Design | Done |
-| 3. Agent Orchestration | Done |
-| 4. Prompt Engineering | Done |
-| 5. Context Engineering | Done |
-| 6. RAG | Done |
-| 7. MCP Servers & Tools | Done (5 servers) |
-| 8. Automated Workflows | Done (3 workflows) |
-| 9. Human-in-the-Loop | Done |
-| 10. FastAPI Backend | Done |
-| 11. Frontend Platform | Done (8 modules) |
-| 12. Observability & Evaluation | Done |
-| 13. Evaluation Harness | Done |
-| 14. Deployment | Done |
-| 15. GitHub Requirements | Done |
+| Part                              | Status             |
+| --------------------------------- | ------------------ |
+| 1. Enterprise Architecture Design | Done               |
+| 2. Multi-Agent System Design      | Done               |
+| 3. Agent Orchestration            | Done               |
+| 4. Prompt Engineering             | Done               |
+| 5. Context Engineering            | Done               |
+| 6. RAG                            | Done               |
+| 7. MCP Servers & Tools            | Done (5 servers)   |
+| 8. Automated Workflows            | Done (3 workflows) |
+| 9. Human-in-the-Loop              | Done               |
+| 10. FastAPI Backend               | Done               |
+| 11. Frontend Platform             | Done (8 modules)   |
+| 12. Observability & Evaluation    | Done               |
+| 13. Evaluation Harness            | Done               |
+| 14. Deployment                    | Done               |
+| 15. GitHub Requirements           | Done               |
