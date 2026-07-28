@@ -69,7 +69,7 @@ from agents.schemas import (
 )
 from backend.app.core.logging import get_logger
 from backend.app.models import ApprovalKind, EventType, RunStatus, Ticket
-from mcp_tools.registry import build_tools
+from mcp_server.registry import build_tools
 from workflows.hitl import (
     ApprovalGate,
     ApprovalRequired,
@@ -95,10 +95,21 @@ class TicketResolutionWorkflow:
         self.db = db
         self.store = StateStore(db)
         self.gate = ApprovalGate(db, self.store)
-        # Defaults to the MCP registry (Part 7). Injectable so the evaluation
-        # harness can substitute recorded tools and measure agent reasoning
-        # without live retrieval underneath it.
-        self.tools = tools if tools is not None else build_tools(db)
+        self._adapter = None
+        # Defaults to the MCP registry, backed by the standalone FastMCP
+        # server. Injectable so the evaluation harness can substitute
+        # recorded tools and measure agent reasoning without a live server
+        # subprocess underneath it.
+        if tools is not None:
+            self.tools = tools
+        else:
+            self.tools, self._adapter = build_tools()
+
+    def close(self) -> None:
+        """Stop the MCP server subprocess, if this instance owns one."""
+        if self._adapter is not None:
+            self._adapter.stop()
+            self._adapter = None
 
     def _t(self, name: str) -> list[BaseTool]:
         return self.tools.get(name, [])
@@ -122,6 +133,8 @@ class TicketResolutionWorkflow:
             logger.info("run %s paused at %s", run.id, gate.kind.value)
         except RecoveryExhausted as exc:
             self.store.set_status(run.id, RunStatus.ESCALATED, error=str(exc))
+        finally:
+            self.close()
         return run.id
 
     def resume(self, run_id: str) -> str:
@@ -143,6 +156,8 @@ class TicketResolutionWorkflow:
             logger.info("run %s paused again at %s", run_id, gate.kind.value)
         except RecoveryExhausted as exc:
             self.store.set_status(run_id, RunStatus.ESCALATED, error=str(exc))
+        finally:
+            self.close()
         return run_id
 
     # ------------------------------------------------------------------

@@ -11,7 +11,7 @@ from agents.definitions import AGENT_REGISTRY
 from backend.app.api.deps import CurrentUser, DbSession
 from backend.app.core.logging import get_logger
 from backend.app.schemas.api import AgentExecuteRequest, AgentExecuteResponse, AgentInfo
-from mcp_tools.registry import build_tools
+from mcp_server.registry import build_tools
 
 router = APIRouter(prefix="/agents", tags=["agents"])
 logger = get_logger(__name__)
@@ -31,23 +31,25 @@ _TIERS = {
 
 @router.get("", response_model=list[AgentInfo])
 def list_agents(db: DbSession, user: CurrentUser) -> list[AgentInfo]:
-    tools = build_tools(db)
-    out = []
-    for name, builder in AGENT_REGISTRY.items():
-        agent = builder(tools.get(name, []))
-        out.append(
-            AgentInfo(
-                name=name,
-                role=agent.role,
-                goal=agent.goal,
-                tier=_TIERS.get(name, "reasoning"),
-                tools=[t.name for t in (agent.tools or [])],
-                max_iter=agent.max_iter,
-                allow_delegation=agent.allow_delegation,
+    tools, adapter = build_tools()
+    try:
+        out = []
+        for name, builder in AGENT_REGISTRY.items():
+            agent = builder(tools.get(name, []))
+            out.append(
+                AgentInfo(
+                    name=name,
+                    role=agent.role,
+                    goal=agent.goal,
+                    tier=_TIERS.get(name, "reasoning"),
+                    tools=[t.name for t in (agent.tools or [])],
+                    max_iter=agent.max_iter,
+                    allow_delegation=agent.allow_delegation,
+                )
             )
-        )
-    return out
-
+        return out
+    finally:
+        adapter.stop()
 
 @router.post("/execute", response_model=AgentExecuteResponse)
 def execute_agent(
@@ -67,24 +69,28 @@ def execute_agent(
             detail=f"Unknown agent '{payload.agent}'. Available: {', '.join(AGENT_REGISTRY)}",
         )
 
-    agent = AGENT_REGISTRY[payload.agent](build_tools(db).get(payload.agent, []))
-    task = Task(
-        description=payload.task,
-        expected_output="A direct response to the task.",
-        agent=agent,
-    )
-
-    t0 = time.perf_counter()
+    tools, adapter = build_tools()
     try:
-        result = Crew(agents=[agent], tasks=[task], process=Process.sequential).kickoff()
-    except Exception as exc:
-        logger.exception("agent execution failed: %s", payload.agent)
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY, detail=f"Agent execution failed: {exc}"
-        ) from exc
+        agent = AGENT_REGISTRY[payload.agent](tools.get(payload.agent, []))
+        task = Task(
+            description=payload.task,
+            expected_output="A direct response to the task.",
+            agent=agent,
+        )
 
-    return AgentExecuteResponse(
-        agent=payload.agent,
-        output=str(result),
-        duration_ms=(time.perf_counter() - t0) * 1000,
-    )
+        t0 = time.perf_counter()
+        try:
+            result = Crew(agents=[agent], tasks=[task], process=Process.sequential).kickoff()
+        except Exception as exc:
+            logger.exception("agent execution failed: %s", payload.agent)
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY, detail=f"Agent execution failed: {exc}"
+            ) from exc
+
+        return AgentExecuteResponse(
+            agent=payload.agent,
+            output=str(result),
+            duration_ms=(time.perf_counter() - t0) * 1000,
+        )
+    finally:
+        adapter.stop()

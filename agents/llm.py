@@ -61,10 +61,28 @@ def get_llm(tier: Tier = Tier.REASONING) -> LLM:
     first agent to hit the limit kills the run. Retries turn a rate limit into
     latency instead of a failure.
     """
-    return LLM(
+    llm = LLM(
         model=_validated_model(),
         api_key=settings.resolved_llm_key,
         base_url=settings.llm_base_url or None,
         temperature=_TEMPS[tier],
         max_retries=settings.llm_max_retries,
+        # Force the LiteLLM path rather than CrewAI's native Gemini SDK
+        # integration. The native path's tool-schema converter rejects
+        # `additionalProperties` in a tool's JSON schema, which every
+        # MCP-derived tool schema includes — a CrewAI/google-genai
+        # incompatibility, not a bug in our tools.
+        is_litellm=True,
     )
+
+    # Gemini 3.x's native function-calling API requires a `thought_signature`
+    # to be replayed on every subsequent turn of a multi-step tool call, and
+    # litellm's Vertex/Gemini integration does not currently preserve it —
+    # every second tool call in a session fails with a 400. Forcing
+    # supports_function_calling() to False makes CrewAI fall back to its
+    # text-based (ReAct-style) tool calling, which never touches Gemini's
+    # structured function-calling API and therefore never hits this bug.
+    # Remove this override once litellm round-trips thought_signature
+    # correctly for gemini/* models.
+    llm.supports_function_calling = lambda: False
+    return llm

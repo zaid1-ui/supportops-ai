@@ -15,7 +15,7 @@ Enterprise support organisations are bottlenecked by human throughput, not by hu
 - **Escalation is reactive.** Nobody notices a ticket is heading for an SLA breach or a churn risk until it already has.
 - **Quality is unmeasured.** There is no systematic check that an answer sent to a customer is grounded in real documentation and compliant with refund/policy rules.
 
-A single LLM chatbot does not solve this. Answering a ticket correctly requires *decomposition*: classify → retrieve evidence → diagnose root cause → decide an action → verify the action is grounded and policy-compliant → get human sign-off → execute → record. Each of those is a different job with a different failure mode, a different tool set, and a different definition of "correct."
+A single LLM chatbot does not solve this. Answering a ticket correctly requires _decomposition_: classify → retrieve evidence → diagnose root cause → decide an action → verify the action is grounded and policy-compliant → get human sign-off → execute → record. Each of those is a different job with a different failure mode, a different tool set, and a different definition of "correct."
 
 **That decomposition is the argument for a multi-agent system**, not a stylistic preference.
 
@@ -27,29 +27,29 @@ SupportOps AI operates as an **AI support organisation** sitting behind the huma
 
 Scope of automation:
 
-| Capability | Before | With SupportOps AI |
-|---|---|---|
-| Ticket triage | Manual, inconsistent | Automatic classification: intent, severity, product area, routing queue |
-| Answer research | Human searches 4 systems | RAG across KB + runbooks + ticket history, with citations |
-| Root cause analysis | Tribal knowledge | Diagnostic agent correlates symptoms with known issues |
-| Response drafting | From scratch | Drafted, cited, policy-checked |
-| Quality control | Spot checks | Every response passes a Validation agent before a human sees it |
-| Escalation | Reactive | Proactive SLA/sentiment/churn risk scoring |
-| Knowledge upkeep | Never | Knowledge Gap workflow finds what the KB is missing |
-| Reporting | Manual spreadsheets | Generated RCA and ops reports |
+| Capability          | Before                   | With SupportOps AI                                                      |
+| ------------------- | ------------------------ | ----------------------------------------------------------------------- |
+| Ticket triage       | Manual, inconsistent     | Automatic classification: intent, severity, product area, routing queue |
+| Answer research     | Human searches 4 systems | RAG across KB + runbooks + ticket history, with citations               |
+| Root cause analysis | Tribal knowledge         | Diagnostic agent correlates symptoms with known issues                  |
+| Response drafting   | From scratch             | Drafted, cited, policy-checked                                          |
+| Quality control     | Spot checks              | Every response passes a Validation agent before a human sees it         |
+| Escalation          | Reactive                 | Proactive SLA/sentiment/churn risk scoring                              |
+| Knowledge upkeep    | Never                    | Knowledge Gap workflow finds what the KB is missing                     |
+| Reporting           | Manual spreadsheets      | Generated RCA and ops reports                                           |
 
 ---
 
 ## 3. Target Users
 
-| User | Role in the system | What they need |
-|---|---|---|
-| **Tier-1 Support Agent** | Primary operator. Receives drafted, cited responses; approves, edits, or rejects. | Speed. Trust. One-click approve. Visible citations. |
-| **Tier-2 / Escalation Engineer** | Receives escalated tickets with the full agent trace and diagnostic hypothesis attached. | Context without re-reading the thread. |
-| **Support Team Lead** | Watches the queue, SLA risk, and agent performance. Sets approval thresholds. | Dashboards, override authority, audit trail. |
-| **Knowledge Manager** | Owns the KB. Consumes Knowledge Gap reports. | What's missing, what's stale, what's contradictory. |
-| **Support Ops / Director** | Consumes analytics: deflection rate, resolution time, agent success rates. | Metrics and reports, not tickets. |
-| **Platform Engineer** | Operates the system itself. | Observability, traces, failure rates, config. |
+| User                             | Role in the system                                                                       | What they need                                      |
+| -------------------------------- | ---------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| **Tier-1 Support Agent**         | Primary operator. Receives drafted, cited responses; approves, edits, or rejects.        | Speed. Trust. One-click approve. Visible citations. |
+| **Tier-2 / Escalation Engineer** | Receives escalated tickets with the full agent trace and diagnostic hypothesis attached. | Context without re-reading the thread.              |
+| **Support Team Lead**            | Watches the queue, SLA risk, and agent performance. Sets approval thresholds.            | Dashboards, override authority, audit trail.        |
+| **Knowledge Manager**            | Owns the KB. Consumes Knowledge Gap reports.                                             | What's missing, what's stale, what's contradictory. |
+| **Support Ops / Director**       | Consumes analytics: deflection rate, resolution time, agent success rates.               | Metrics and reports, not tickets.                   |
+| **Platform Engineer**            | Operates the system itself.                                                              | Observability, traces, failure rates, config.       |
 
 ---
 
@@ -60,7 +60,7 @@ Scope of automation:
 - **Time-to-first-response ↓** — Draft ready in <60s vs. ~20 min human research time.
 - **Deflection rate ↑** — Repeat questions answered from the KB without a human writing prose.
 - **SLA breach rate ↓** — Escalation Risk workflow surfaces at-risk tickets before breach, not after.
-- **Answer quality ↑ and *measurable*** — Every response carries citations; the Validation agent gates on groundedness. Retrieval accuracy and hallucination rate become tracked numbers rather than vibes.
+- **Answer quality ↑ and _measurable_** — Every response carries citations; the Validation agent gates on groundedness. Retrieval accuracy and hallucination rate become tracked numbers rather than vibes.
 - **Knowledge base coverage ↑** — Gap reports turn unresolved tickets into a prioritised content backlog.
 - **Audit compliance** — Every automated action has a trace: which agent, which prompt, which retrieved chunk, which human approved it.
 
@@ -113,21 +113,21 @@ Scope of automation:
 
 ### 5.2 Component Responsibilities
 
-| Component | Technology | Responsibility |
-|---|---|---|
-| Frontend | Next.js 14, TypeScript, Tailwind, TanStack Query | Operator UI, SSE consumption for live agent traces |
-| API Gateway | FastAPI, Pydantic v2, python-jose | Contract enforcement, authn/authz, request lifecycle |
-| Orchestrator | CrewAI | Crew assembly, task graph, delegation, state handoff |
-| LLM Framework | LangChain | LLM abstraction, embeddings, document loaders, text splitters |
-| Agents | CrewAI `Agent` + prompt library | Domain reasoning, one job each |
-| Tools | MCP servers (`mcp` Python SDK) → CrewAI `BaseTool` adapters | Side effects and external reads |
-| Vector store | ChromaDB (persistent client) | Dense retrieval over enterprise knowledge |
-| Relational store | SQLAlchemy 2.0 (SQLite) | Tickets, users, workflow runs, approvals, events, feedback |
-| Observability | Event table + structured JSON logs + `/metrics` | Agent success, retrieval accuracy, tool usage, failures |
+| Component        | Technology                                                  | Responsibility                                                |
+| ---------------- | ----------------------------------------------------------- | ------------------------------------------------------------- |
+| Frontend         | Next.js 14, TypeScript, Tailwind, TanStack Query            | Operator UI, SSE consumption for live agent traces            |
+| API Gateway      | FastAPI, Pydantic v2, python-jose                           | Contract enforcement, authn/authz, request lifecycle          |
+| Orchestrator     | CrewAI                                                      | Crew assembly, task graph, delegation, state handoff          |
+| LLM Framework    | LangChain                                                   | LLM abstraction, embeddings, document loaders, text splitters |
+| Agents           | CrewAI `Agent` + prompt library                             | Domain reasoning, one job each                                |
+| Tools            | MCP servers (`mcp` Python SDK) → CrewAI `BaseTool` adapters | Side effects and external reads                               |
+| Vector store     | ChromaDB (persistent client)                                | Dense retrieval over enterprise knowledge                     |
+| Relational store | SQLAlchemy 2.0 (SQLite)                                     | Tickets, users, workflow runs, approvals, events, feedback    |
+| Observability    | Event table + structured JSON logs + `/metrics`             | Agent success, retrieval accuracy, tool usage, failures       |
 
 ### 5.3 Why These Choices
 
-- **CrewAI over LangGraph** — the workflows here are *role-shaped* (a triage person, a researcher, a QA reviewer), not arbitrary state machines. CrewAI's role/goal/backstory abstraction maps directly onto how a real support org is structured, and its hierarchical process gives task delegation for free. Trade-off accepted: less fine-grained control over state transitions than LangGraph, mitigated by an explicit `WorkflowState` object passed through task context.
+- **CrewAI over LangGraph** — the workflows here are _role-shaped_ (a triage person, a researcher, a QA reviewer), not arbitrary state machines. CrewAI's role/goal/backstory abstraction maps directly onto how a real support org is structured, and its hierarchical process gives task delegation for free. Trade-off accepted: less fine-grained control over state transitions than LangGraph, mitigated by an explicit `WorkflowState` object passed through task context.
 - **Dense retrieval only** — Part 6 requires vector search and citations. Hybrid retrieval (BM25 + reciprocal rank fusion) and cross-encoder reranking are the known next lever on retrieval accuracy, but they are a scaling path, not implemented here: each adds a dependency and a failure mode, and neither earns its keep until the retrieval metrics in Part 12 show dense search missing.
 - **ChromaDB over FAISS** — needs metadata filtering (`product_area`, `doc_type`, `version`, `updated_at`) at query time for scoped retrieval, and persistence without hand-rolling an index sidecar. FAISS is faster at raw ANN but has no native metadata filter or persistence story.
 - **SQLAlchemy (SQLite backend)** — the ORM is the contract; the engine URL is a single config value, so the same models run on SQLite locally and on any server engine later without code changes. JSON columns hold agent traces and workflow state snapshots. Keeps the reproducible setup the assessment requires to one `pip install` with no database server to provision.
@@ -194,15 +194,15 @@ Every side effect goes through an MCP tool, and every MCP tool call is recorded 
 
 ### 7.1 The Crew
 
-| # | Agent | One-line job |
-|---|---|---|
-| 1 | **Triage Agent** | Classify and route: intent, severity, product area, queue |
-| 2 | **Research Agent** | Find grounded evidence via RAG + ticket history |
-| 3 | **Diagnostic Agent** | Form a root-cause hypothesis from symptoms + evidence |
-| 4 | **Resolution Agent** | Decide the action and draft the customer response |
-| 5 | **Validation Agent** | Gate: is it grounded, policy-compliant, and complete? |
-| 6 | **Escalation Agent** | Detect SLA/sentiment/churn risk; route to a human tier |
-| 7 | **Reporting Agent** | Produce RCA reports, gap reports, ops summaries |
+| #   | Agent                | One-line job                                              |
+| --- | -------------------- | --------------------------------------------------------- |
+| 1   | **Triage Agent**     | Classify and route: intent, severity, product area, queue |
+| 2   | **Research Agent**   | Find grounded evidence via RAG + ticket history           |
+| 3   | **Diagnostic Agent** | Form a root-cause hypothesis from symptoms + evidence     |
+| 4   | **Resolution Agent** | Decide the action and draft the customer response         |
+| 5   | **Validation Agent** | Gate: is it grounded, policy-compliant, and complete?     |
+| 6   | **Escalation Agent** | Detect SLA/sentiment/churn risk; route to a human tier    |
+| 7   | **Reporting Agent**  | Produce RCA reports, gap reports, ops summaries           |
 
 Full responsibilities / inputs / outputs / tools / prompts / failure modes → `docs/AGENTS.md` (Part 2).
 
@@ -288,28 +288,33 @@ Ranked by what actually saturates:
 ### 8.2 Mitigations
 
 **LLM layer**
+
 - **Model tiering** — Triage and Escalation are classification jobs → small fast model. Diagnostic and Resolution → frontier model. Cuts blended cost materially versus one model everywhere.
 - **Semantic caching** — cache keyed on `(normalised_question, product_area, kb_version)`. Repeat questions are the majority of the queue by definition, so cache hit rate is the single biggest cost lever.
 - **Prompt caching** on the static system prompt + policy block.
 - **Budget guard** — per-run token ceiling; exceeding it escalates to a human rather than looping.
 
 **Execution layer**
+
 - **Workflows are async jobs, not requests.** `POST /workflows/run` returns `202` + `run_id`; Celery worker executes; frontend subscribes to SSE. The API never blocks on a crew.
 - **Durable pause/resume at HITL** — state is serialised to the database and the worker releases. Human approval enqueues a resume job. Idle runs consume zero compute.
 - **Horizontal workers** — stateless Celery workers; scale on queue depth. Separate queues for interactive (ticket resolution) vs. batch (scheduled reports) so a nightly report run can't starve live tickets.
 
 **Retrieval layer**
+
 - Chroma persistent server mode with HNSW tuned (`M=32`, `ef_construction=200`); metadata pre-filtering shrinks the candidate set before ANN.
 - Collection **sharded by `product_area`** — retrieval is almost always scoped, so this cuts search space and blast radius.
 - Embeddings computed once at ingest. Query embedding is the only per-query model call, so retrieval cost is flat in corpus size.
 - Ingestion is a separate worker pool — a 500-page PDF upload must not affect query latency.
 
 **Data layer**
+
 - SQLite is the development engine and the single-node ceiling. Because persistence goes through the SQLAlchemy ORM, moving to a client/server engine is a `DATABASE_URL` change, not a rewrite — this is the main reason the ORM is the boundary rather than raw SQL.
 - `events` is append-only; archive rows past 90 days rather than letting the table grow unbounded.
 - Metrics pre-aggregated into a rollup table by a periodic job; the dashboard reads rollups, not raw events.
 
 **Multi-tenancy**
+
 - `tenant_id` on every table and every Chroma metadata record; enforced at the repository layer, not left to callers.
 - Per-tenant rate limits and token budgets so one tenant cannot exhaust shared LLM capacity.
 
@@ -330,8 +335,8 @@ supportops-ai/
 ├── agents/           CrewAI agent definitions + prompt library
 ├── workflows/        Crew assembly, state machine, HITL gates
 ├── rag/              ingestion, chunking, embedding, retrieval, citation
-├── mcp_tools/        5 MCP servers + CrewAI tool adapters
-│                  (named mcp_tools, not mcp: a top-level `mcp/` package
+├── mcp_server/       Standalone FastMCP server: tools, resources, prompts
+│                  (named mcp_server, not mcp: a top-level `mcp/` package
 │                   shadows the MCP SDK's own `mcp` package on sys.path)
 ├── evaluation/       harness, scenarios, benchmark cases
 ├── frontend/         Next.js 14 platform UI
