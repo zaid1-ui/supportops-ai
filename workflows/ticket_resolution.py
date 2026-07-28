@@ -58,6 +58,7 @@ from agents.prompts import (
     VALIDATION_TASK,
 )
 from agents.schemas import (
+    ActionType,
     DiagnosticOutput,
     EscalationOutput,
     ResearchOutput,
@@ -68,8 +69,9 @@ from agents.schemas import (
     WorkflowState,
 )
 from backend.app.core.logging import get_logger
-from backend.app.models import ApprovalKind, EventType, RunStatus, Ticket
+from backend.app.models import ApprovalKind, EventType, RunStatus, Ticket, TicketStatus
 from mcp_server.registry import build_tools
+from mcp_server.tools.email import send_email
 from workflows.hitl import (
     ApprovalGate,
     ApprovalRequired,
@@ -445,13 +447,20 @@ class TicketResolutionWorkflow:
 
         # Send + ticket update go through email_mcp / ticket_db_mcp (Part 7).
         # Both are idempotent on run_id: a retried send must not double-send.
-        self.store.emit(
-            run_id,
-            EventType.TOOL_CALLED,
-            agent="resolution",
-            tool="email_mcp.send",
-            payload={"action": state.resolution.action.value, "idempotency_key": run_id},
+        # send_email is not assigned to any agent (see mcp_server/registry.py) —
+        # it's called here, directly, post-approval, outside the crew.
+        result = send_email(
+            self.db,
+            run_id=run_id,
+            to=ticket.customer_email,
+            subject=f"Re: {ticket.subject}",
+            body=state.resolution.draft_response,
         )
+        if not result.ok:
+            raise RecoveryExhausted(f"Send failed after approval: {result.error}")
+
+        ticket.status = TicketStatus.RESOLVED if state.resolution.action is ActionType.REPLY_AND_CLOSE else ticket.status
+        self.db.commit()
 
         agent = build_reporting_agent(self._t("reporting"))
         self.store.emit(run_id, EventType.RUN_COMPLETED, payload={"reported_by": agent.role})
