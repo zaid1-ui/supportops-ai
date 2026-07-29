@@ -1,16 +1,17 @@
 """Quick manual check that the MCP server responds to tool calls."""
 
 import asyncio
-from http import client
-from importlib import resources
+from pathlib import Path
+
 from fastmcp import Client
 from fastmcp.client.transports import StdioTransport
-from langchain import prompts
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
 
 transport = StdioTransport(
     command="python",
     args=["-m", "mcp_server.server"],
-    cwd="C:\\Users\\HP\\supportops-ai",
+    cwd=str(REPO_ROOT),
 )
 
 async def main():
@@ -38,7 +39,7 @@ async def main():
 
         resources = await client.list_resources()
         print("Resources:", [r.uri for r in resources])
-    
+
         result = await client.read_resource("schema://ticket")
         print("ticket_schema:", result[0].text[:200])
 
