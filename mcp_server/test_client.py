@@ -13,7 +13,7 @@ transport = StdioTransport(
     args=["-m", "mcp_server.server"],
     cwd=str(REPO_ROOT),
 )
-
+    
 async def main():
     async with Client(transport) as client:
         tools = await client.list_tools()
