@@ -1,18 +1,29 @@
-"""Quick manual check that the MCP server responds to tool calls."""
+"""Quick manual check that the MCP server responds to tool calls.
+
+The transport is read from config, so whether the server runs as a spawned
+stdio subprocess or as an already-running SSE server is decided in one place
+(MCPServerConfig / .env) and this client follows it — the same way
+crew_client.py does for the agent-facing adapter.
+"""
 
 import asyncio
 from pathlib import Path
 
 from fastmcp import Client
-from fastmcp.client.transports import StdioTransport
+from fastmcp.client.transports import SSETransport, StdioTransport
+
+from mcp_server.config import config
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
-transport = StdioTransport(
-    command="python",
-    args=["-m", "mcp_server.server"],
-    cwd=str(REPO_ROOT),
-)
+if config.transport == "sse":
+    transport = SSETransport(f"http://{config.sse_host}:{config.sse_port}/sse")
+else:
+    transport = StdioTransport(
+        command="python",
+        args=["-m", "mcp_server.server"],
+        cwd=str(REPO_ROOT),
+    )
     
 async def main():
     async with Client(transport) as client:

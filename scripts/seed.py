@@ -76,7 +76,7 @@ def main() -> int:
 
         kb = Path("data/knowledge")
         if kb.exists() and any(kb.iterdir()):
-            print(f"knowledge: ingest with  python -m scripts.ingest {kb}")
+            print("knowledge: found docs in data/knowledge — upload them via POST /documents/upload")
         else:
             print("knowledge: none — upload via POST /documents/upload")
         return 0

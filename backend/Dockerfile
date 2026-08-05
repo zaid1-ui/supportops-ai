@@ -15,12 +15,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Application packages. Note mcp_tools (not mcp — that name shadows the SDK).
+# Application packages. The standalone FastMCP server lives in mcp_server/
+# (mcp_tools was the earlier in-process adapters and has been removed).
 COPY backend/ ./backend/
 COPY agents/ ./agents/
 COPY workflows/ ./workflows/
 COPY rag/ ./rag/
-COPY mcp_tools/ ./mcp_tools/
+COPY mcp_server/ ./mcp_server/
 COPY evaluation/ ./evaluation/
 COPY scripts/ ./scripts/
 

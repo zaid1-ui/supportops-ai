@@ -1,10 +1,10 @@
 # ---- Agent framework ----
-crewai==0.86.0
-crewai-tools==0.17.0
-# crewai pins litellm>=1.44.22 with no upper bound. Left unpinned, pip resolves to
-# a far newer litellm than crewai 0.86.0 was built against and backtracks through
-# hundreds of releases. Pin the contemporaneous version.
-litellm==1.53.9
+# Pins match the versions verified in the local venv. crewai 1.x is proven
+# against the current litellm/mcp/fastmcp stack; the earlier 0.86.0 pins were
+# left over from a previous environment and untested against the newer clients.
+crewai==1.15.7
+crewai-tools==1.15.7
+litellm==1.67.5
 
 # ---- LLM framework ----
 langchain==0.3.14
@@ -15,8 +15,8 @@ langchain-text-splitters==0.3.5
 # ---- Backend ----
 fastapi==0.115.6
 uvicorn[standard]==0.35.0
-pydantic==2.10.4
-pydantic-settings==2.7.1
+pydantic==2.12.5
+pydantic-settings==2.14.2
 python-multipart==0.0.20
 # EmailStr validation in request schemas.
 email-validator==2.2.0
@@ -31,33 +31,35 @@ bcrypt==4.0.1
 sqlalchemy==2.0.36
 
 # ---- Vector database ----
-chromadb==0.5.23
+chromadb==1.1.1
 
 # ---- Embeddings (EMBEDDING_PROVIDER=local) ----
 # ONNX on CPU. Deliberately not sentence-transformers, which pulls ~2GB of torch.
 fastembed==0.5.1
 
 # ---- MCP ----
-mcp==1.2.0
+# mcp is the official SDK; fastmcp is the ergonomic server/client layer used by
+# mcp_server/server.py and mcp_server/test_client.py. Both are imported
+# directly, so both are pinned explicitly.
+mcp==1.28.1
+fastmcp==3.4.4
 
 # ---- Document ingestion (PDF / DOCX / TXT) ----
 pypdf==5.1.0
 docx2txt==0.8
 # Chunk length is measured in tokens, not characters (see docs/RAG.md).
-tiktoken==0.7.0
+tiktoken==0.12.0
 
 # ---- Config ----
-python-dotenv==1.0.1
+python-dotenv==1.2.2
 
 # ---- Runtime prerequisites ----
-# crewai 0.86.0 does `import pkg_resources` at import time (telemetry.py).
-# pkg_resources ships with setuptools, which (a) modern venvs no longer seed by
-# default and (b) dropped pkg_resources entirely in 82.0.0. Both bounds are
-# load-bearing: without the lower, crewai will not import; without the upper,
-# pip installs 82+ and crewai still will not import.
+# setuptools is a runtime requirement for crewai (it imports pkg_resources at
+# import time in telemetry). Modern venvs no longer seed it by default, and
+# version 82+ dropped pkg_resources entirely, so the upper bound is load-bearing.
 setuptools>=70.0.0,<82.0.0
 
 # ---- Transitive pins ----
-# chromadb pulls httpx>=0.28 while litellm 1.53.9 requires <0.28. Unpinned,
-# pip resolves to an httpx that litellm refuses to import at runtime.
-httpx==0.27.2
+# httpx is pinned to the version crewai/litellm/chromadb resolve to in the
+# tested venv. Keep in sync if you bump any of those.
+httpx==0.28.1
