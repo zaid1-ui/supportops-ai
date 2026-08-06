@@ -54,13 +54,25 @@ CurrentUser = Annotated[User, Depends(get_current_user)]
 
 def require_role(*roles: Role):
     """Dependency factory gating an endpoint to specific roles."""
+    return _RoleGuard(roles)
 
-    def _check(user: CurrentUser) -> User:
-        if user.role not in roles:
+
+class _RoleGuard:
+    """Callable dependency produced by require_role()."""
+
+    def __init__(self, roles: tuple[Role, ...]) -> None:
+        self.roles = roles
+
+    def __call__(self, user: User = Depends(get_current_user)) -> User:
+        if user.role not in self.roles:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail=f"Requires role: {', '.join(r.value for r in roles)}",
+                detail=f"Requires role: {', '.join(r.value for r in self.roles)}",
             )
         return user
 
-    return _check
+
+# Convenient, self-documenting aliases for the two senior roles that share
+# approval authority but own different capabilities.
+AdminUser = Annotated[User, Depends(require_role(Role.ADMIN))]
+LeadUser = Annotated[User, Depends(require_role(Role.LEAD))]

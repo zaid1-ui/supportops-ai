@@ -12,6 +12,8 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, EmailStr, Field
 
+from backend.app.models import Role
+
 
 # ---- auth ----------------------------------------------------------------
 
@@ -32,6 +34,20 @@ class UserResponse(BaseModel):
     email: str
     full_name: str
     role: str
+
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=6)
+    full_name: str = Field(min_length=1)
+    role: Role = Role.AGENT
+
+
+class UserUpdate(BaseModel):
+    full_name: str | None = None
+    password: str | None = Field(default=None, min_length=6)
+    role: Role | None = None
+    is_active: bool | None = None
 
 
 # ---- agents --------------------------------------------------------------
@@ -57,6 +73,37 @@ class AgentExecuteResponse(BaseModel):
     agent: str
     output: str
     duration_ms: float
+
+
+# ---- tickets -------------------------------------------------------------
+
+
+class TicketCreate(BaseModel):
+    """Create a ticket from the console (used during demos)."""
+
+    id: str = Field(description="Unique ticket id, e.g. TK-5005.")
+    subject: str = Field(min_length=1, description="Customer-facing subject line.")
+    body: str = Field(min_length=1, description="Customer's message.")
+    customer_email: EmailStr = Field(description="Customer's email address.")
+    account_tier: str = "standard"
+    sla_hours: int = Field(default=24, ge=1, le=168)
+
+
+class TicketResponse(BaseModel):
+    id: str
+    subject: str
+    body: str
+    customer_email: str
+    account_tier: str
+    status: str
+    intent: str | None
+    severity: str | None
+    product_area: str | None
+    queue: str | None
+    reopen_count: int
+    message_count: int
+    sla_hours: int
+    created_at: datetime
 
 
 # ---- documents -----------------------------------------------------------
@@ -152,6 +199,20 @@ class ApprovalDecision(BaseModel):
     status: Literal["approved", "rejected", "edited"]
     edited_payload: dict | None = None
     feedback: str | None = None
+
+
+# ---- reports (Lead) -----------------------------------------------------
+
+
+class ReportFile(BaseModel):
+    filename: str
+    size_bytes: int
+    modified_at: datetime
+    published: bool = False
+
+
+class PublishReportRequest(BaseModel):
+    filename: str
 
 
 # ---- metrics (Part 12) ---------------------------------------------------

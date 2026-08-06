@@ -8,7 +8,7 @@ from pathlib import Path
 
 from fastapi import APIRouter, File, HTTPException, Query, UploadFile, status
 
-from backend.app.api.deps import CurrentUser, DbSession
+from backend.app.api.deps import AdminUser, CurrentUser, DbSession
 from backend.app.core.config import settings
 from backend.app.core.logging import get_logger
 from backend.app.models import Document
@@ -118,7 +118,7 @@ def search_documents(
 # response_model=None is required: FastAPI otherwise infers one from the return
 # annotation and rejects it, since 204 must not carry a body.
 @router.delete("/{doc_id}", status_code=status.HTTP_204_NO_CONTENT, response_model=None)
-def remove_document(doc_id: str, db: DbSession, user: CurrentUser) -> None:
+def remove_document(doc_id: str, db: DbSession, user: AdminUser) -> None:
     try:
         delete_document(db, doc_id)
     except LookupError as exc:

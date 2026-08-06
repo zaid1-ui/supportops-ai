@@ -1,9 +1,4 @@
-"""User model and roles (Part 10 authentication).
-
-Roles mirror the target users in ARCHITECTURE.md §3. They gate approval
-authority: a Tier-1 agent may approve a response, but only a lead may override
-a triage classification or publish a report.
-"""
+"""User model and roles (Part 10 authentication)."""
 
 from __future__ import annotations
 

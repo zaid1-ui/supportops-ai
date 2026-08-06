@@ -1,25 +1,30 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import { api, setToken } from '@/lib/api';
-import { ErrorBox } from '@/components/ui';
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { api, setToken } from "@/lib/api";
+import { ErrorBox } from "@/components/ui";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState('lead@example.com');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [error, setError] = useState<unknown>(null);
   const [busy, setBusy] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    setBusy(true); setError(null);
+    setBusy(true);
+    setError(null);
     try {
       const { access_token } = await api.login(email, password);
       setToken(access_token);
-      router.replace('/');
-    } catch (err) { setError(err); } finally { setBusy(false); }
+      router.replace("/");
+    } catch (err) {
+      setError(err);
+    } finally {
+      setBusy(false);
+    }
   }
 
   return (
@@ -32,25 +37,40 @@ export default function LoginPage() {
 
         <form onSubmit={submit} className="card space-y-3 p-5">
           <div>
-            <label htmlFor="email" className="eyebrow mb-1 block">Email</label>
-            <input id="email" type="email" required value={email}
-                   onChange={(e) => setEmail(e.target.value)} className="input" />
+            <label htmlFor="email" className="eyebrow mb-1 block">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="input"
+            />
           </div>
           <div>
-            <label htmlFor="password" className="eyebrow mb-1 block">Password</label>
-            <input id="password" type="password" required value={password}
-                   onChange={(e) => setPassword(e.target.value)} className="input" />
+            <label htmlFor="password" className="eyebrow mb-1 block">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="input"
+            />
           </div>
           {error != null && <ErrorBox error={error} />}
-          <button type="submit" disabled={busy} className="btn-primary w-full justify-center">
-            {busy ? 'Signing in…' : 'Sign in'}
+          <button
+            type="submit"
+            disabled={busy}
+            className="btn-primary w-full justify-center"
+          >
+            {busy ? "Signing in…" : "Sign in"}
           </button>
         </form>
-
-        <p className="mt-3 text-xs text-muted">
-          Seeded by <code className="font-mono">python -m scripts.seed</code>. Roles: agent,
-          engineer, lead, admin — password is the role plus 123.
-        </p>
       </div>
     </div>
   );
