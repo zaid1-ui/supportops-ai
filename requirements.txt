@@ -7,17 +7,25 @@ crewai-tools==1.15.7
 litellm==1.67.5
 
 # ---- LLM framework ----
-langchain==0.3.14
-langchain-community==0.3.14
-langchain-openai==0.2.14
-langchain-text-splitters==0.3.5
+# langchain 1.x is required for openai 2.x compatibility. crewai 1.15.7 pins
+# openai>=2.30.0, but the langchain 0.3.x stack (langchain-openai<=0.3) pins
+# openai<2.0.0 — a hard conflict that made `pip install` unresolvable. The 1.x
+# line tracks openai 2.x and is proven against crewai 1.15.7 / litellm 1.67.5.
+langchain==1.3.14
+langchain-community==0.4.2
+langchain-openai==1.4.1
+langchain-text-splitters==1.1.2
 
 # ---- Backend ----
-fastapi==0.115.6
+# fastapi must be >=0.135 (starlette>=0.46, no upper bound) to coexist with
+# fastmcp 3.4.4, which requires starlette>=1.0.1. fastapi 0.115.x pins
+# starlette<0.42, a hard conflict in the same venv.
+fastapi==0.135.0
 uvicorn[standard]==0.35.0
 pydantic==2.12.5
 pydantic-settings==2.14.2
-python-multipart==0.0.20
+# fastmcp-slim 3.4.4 (server extra) requires python-multipart>=0.0.26.
+python-multipart==0.0.26
 # EmailStr validation in request schemas.
 email-validator==2.2.0
 
